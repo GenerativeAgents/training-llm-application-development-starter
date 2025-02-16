@@ -60,7 +60,7 @@ AWS CloudShell で以下のコマンドを実行することで、複数の環�
 ```console
 curl -sSfLO https://raw.githubusercontent.com/GenerativeAgents/training-llm-application-development-starter/refs/heads/main/docs/ec2_code_server.yaml
 
-for i in {01..10}; do
+for i in {01..05}; do
   aws cloudformation create-stack \
     --stack-name "code-server-${i}" \
     --template-body "file://$(pwd)/ec2_code_server.yaml" \
@@ -75,6 +75,37 @@ done
 > - リージョンあたりの Elastic IP アドレスの数
 >
 > 参考: https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/amazon-vpc-limits.html
+
+上記のコマンドで作成した環境の接続情報一覧は、以下のコマンドで取得できます。
+
+```console
+stack_names="$(aws cloudformation list-stacks \
+  --query 'StackSummaries[?starts_with(StackName, `code-server-`) && StackStatus != `DELETE_COMPLETE`].StackName' \
+  --output text \
+  | tr '\t' '\n' \
+  | sort
+)"
+
+for stack_name in $stack_names; do
+  echo "Name:"
+  echo "${stack_name}"
+
+  echo "URL:"
+  aws cloudformation describe-stacks \
+    --stack-name $stack_name \
+    --query 'Stacks[].Outputs[?OutputKey==`URL`].OutputValue' \
+    | jq -r .[][]
+
+  echo "Password:"
+  aws secretsmanager get-secret-value \
+    --secret-id "${stack_name}-Password" \
+    --region ap-northeast-1 \
+    --query 'SecretString' \
+    --output text
+
+  echo
+done
+```
 
 ### code-server への接続
 
