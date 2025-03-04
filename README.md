@@ -136,3 +136,15 @@ Streamlit のアプリケーションにアクセスしたら、下部の入力�
 ![](./docs/images/streamlit_hello_world.png)
 
 これでハンズオン環境の準備は完了です。
+
+### Streamlitの停止
+
+Streamlit がすでに起動している場合、`make streamlit` を実行すると以下のエラーが発生します。
+```
+$ make streamlit
+uv run streamlit run app.py --server.port 8080
+2025-03-04 20:40:42.479 Port 8080 is already in use
+make: *** [streamlit] Error 1
+```
+
+この場合は、`pkill streamlit` を実行して Streamlit を停止してください。
