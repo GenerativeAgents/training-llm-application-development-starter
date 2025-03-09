@@ -64,7 +64,8 @@ for i in {01..05}; do
   aws cloudformation create-stack \
     --stack-name "code-server-${i}" \
     --template-body "file://$(pwd)/ec2_code_server.yaml" \
-    --capabilities CAPABILITY_IAM
+    --capabilities CAPABILITY_IAM \
+    --parameters "ParameterKey=AvailabilityZone,ParameterValue=ap-northeast-1a"
 done
 ```
 

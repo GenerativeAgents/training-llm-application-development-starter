@@ -202,6 +202,11 @@ Parameters:
         t4g.xlarge,
         t4g.2xlarge
       ]
+  AvailabilityZone:
+    Description: The availability zone.
+    Type: String
+    Default: ap-northeast-1a
+    AllowedValues: [ap-northeast-1a, ap-northeast-1c, ap-northeast-1d]
   CodeServerPort:
     Type: Number
     Description: The port code-server listens on.
