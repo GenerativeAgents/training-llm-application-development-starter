@@ -88,7 +88,6 @@ stack_names="$(aws cloudformation list-stacks \
 )"
 
 for stack_name in $stack_names; do
-  stack_name=work
   instance_id="$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${stack_name}" \
     --query "Reservations[].Instances[].InstanceId" \
