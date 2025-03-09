@@ -293,6 +293,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
+      AvailabilityZone: !Ref AvailabilityZone
       CidrBlock: !FindInMap [Constants, VPC, PublicSubnetCidrBlock]
       MapPublicIpOnLaunch: true
   PublicSubnetRouteTableAssociation:
