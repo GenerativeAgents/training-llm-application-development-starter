@@ -76,7 +76,7 @@ done
 >
 > 参考: https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/amazon-vpc-limits.html
 
-上記のコマンドで作成した環境の接続情報一覧は、以下のコマンドで取得できます。
+以下のコマンドで、環境をセットアップできます。
 
 ```console
 stack_names="$(aws cloudformation list-stacks \
@@ -86,6 +86,22 @@ stack_names="$(aws cloudformation list-stacks \
   | sort
 )"
 
+for stack_name in $stack_names; do
+  stack_name=work
+  instance_id="$(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=${stack_name}" \
+    --query "Reservations[].Instances[].InstanceId" \
+    --output text \
+  )"
+
+  aws ssm start-session --target "${instance_id}" --document-name AWS-StartInteractiveCommand \
+    --parameters command="curl -L https://raw.githubusercontent.com/GenerativeAgents/training-llm-application-development-starter/refs/heads/main/docs/setup.sh | sudo -u ubuntu bash"
+done
+```
+
+さらに以下のコマンドで、接続情報の一覧を取得できます。
+
+```console
 for stack_name in $stack_names; do
   echo "Name:"
   echo "${stack_name}"
