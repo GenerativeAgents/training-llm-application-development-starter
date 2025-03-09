@@ -359,6 +359,7 @@ Resources:
     Properties:
       ImageId: !FindInMap [Constants, EC2, ImageId]
       InstanceType: !Ref InstanceType
+      AvailabilityZone: !Ref AvailabilityZone
       NetworkInterfaces:
         - SubnetId: !Ref PublicSubnet
           AssociatePublicIpAddress: 'true'
