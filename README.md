@@ -10,12 +10,6 @@ AWS の EC2 インスタンスで code-server (ブラウザ上で動作する Vi
 
 ハンズオン環境には付与された接続情報で接続するか、[こちら](./docs/ec2_code_server.md) の手順で構築してください。
 
-## .env ファイルの作成
-
-.env.template をコピーして .env ファイルを作成してください。
-
-.env ファイルには OpenAI API キーを記載してください。
-
 ## Jupyter の動作確認
 
 「notebooks/hello.ipynb」を開いてください。
