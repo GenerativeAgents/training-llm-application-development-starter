@@ -29,6 +29,9 @@ Python の環境として「.venv (venv/bin/python)」を選択してくださ�
 
 ![](./docs/images/code_server_notebook_hello.png)
 
+> [!NOTE]
+> Jupyter では、`!` で始まる行はシェルコマンドとして実行されます。Python のコードとしては不正なため `!` の下部に赤い波線が表示されるかもしれませんが、動作は問題ありません。
+
 ## Streamlit の起動
 
 画面左のメニューボタン (≡) をクリックし、「ターミナル」>「新しいターミナル」でターミナルを開くことができます。
