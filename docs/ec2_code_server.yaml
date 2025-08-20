@@ -415,6 +415,9 @@ Resources:
           sudo -u ubuntu mkdir -p /home/ubuntu/environment
           sudo chown -R ubuntu:ubuntu /home/ubuntu
 
+          # Setup environment
+          curl -L https://raw.githubusercontent.com/GenerativeAgents/training-llm-application-development-starter/refs/heads/main/docs/setup.sh | sudo -u ubuntu bash
+
   # インスタンスを停止してもCloudFrontのオリジンを変更しなくて済むようEIPを割り当て
   InstanceEIP:
     Type: AWS::EC2::EIP

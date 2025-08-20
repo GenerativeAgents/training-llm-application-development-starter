@@ -9,6 +9,7 @@ AWS の EC2 インスタンスで code-server (ブラウザ上で動作する Vi
 ## 目次
 
 - [環境構築手順](#環境構築手順)
+- [複数の環境を構築するには](#複数の環境を構築するには)
 - [トラブルシューティング](#トラブルシューティング)
 - [停止・削除手順](#停止・削除手順)
 - [基本操作](#基本操作)
@@ -53,76 +54,6 @@ CloudFormation のホーム画面左のメニューから「スタック」を�
 > AWS のハンズオンでは、AWS CLI や CDK、Terraform、Serverless Framework などのツールを使用するために、開発環境に非常に強い権限が必要なことが多いです。
 > そのため、この手順で構築される EC2 インスタンスには AdministratorAccess の権限を付与しています。
 
-#### 複数の環境を作成したい場合
-
-AWS CloudShell で以下のコマンドを実行することで、複数の環境を作成できます。
-
-```console
-curl -sSfLO https://raw.githubusercontent.com/GenerativeAgents/training-llm-application-development-starter/refs/heads/main/docs/ec2_code_server.yaml
-
-for i in {01..05}; do
-  aws cloudformation create-stack \
-    --stack-name "code-server-${i}" \
-    --template-body "file://$(pwd)/ec2_code_server.yaml" \
-    --capabilities CAPABILITY_IAM \
-    --parameters "ParameterKey=AvailabilityZone,ParameterValue=ap-northeast-1a"
-done
-```
-
-> [!WARNING]
-> 同一の AWS アカウントで多数の環境を起動する場合、以下のクォータの引き上げが必要な可能性があります。
->
-> - リージョンあたりの VPC の数
-> - リージョンあたりの Elastic IP アドレスの数
->
-> 参考: https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/amazon-vpc-limits.html
-
-以下のコマンドで、環境をセットアップできます。
-
-```console
-stack_names="$(aws cloudformation list-stacks \
-  --query 'StackSummaries[?starts_with(StackName, `code-server-`) && StackStatus != `DELETE_COMPLETE`].StackName' \
-  --output text \
-  | tr '\t' '\n' \
-  | sort
-)"
-
-for stack_name in $stack_names; do
-  instance_id="$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=${stack_name}" \
-    --query "Reservations[].Instances[].InstanceId" \
-    --output text \
-  )"
-
-  aws ssm start-session --target "${instance_id}" --document-name AWS-StartInteractiveCommand \
-    --parameters command="curl -L https://raw.githubusercontent.com/GenerativeAgents/training-llm-application-development-starter/refs/heads/main/docs/setup.sh | sudo -u ubuntu bash"
-done
-```
-
-さらに以下のコマンドで、接続情報の一覧を取得できます。
-
-```console
-for stack_name in $stack_names; do
-  echo "Name:"
-  echo "${stack_name}"
-
-  echo "URL:"
-  aws cloudformation describe-stacks \
-    --stack-name $stack_name \
-    --query 'Stacks[].Outputs[?OutputKey==`URL`].OutputValue' \
-    | jq -r .[][]
-
-  echo "Password:"
-  aws secretsmanager get-secret-value \
-    --secret-id "${stack_name}-Password" \
-    --region ap-northeast-1 \
-    --query 'SecretString' \
-    --output text
-
-  echo
-done
-```
-
 ### code-server への接続
 
 作成が完了したスタックの「出力」を開きます。
@@ -148,6 +79,63 @@ CloudFormation のスタックの出力の「URL」にアクセスし、コピ�
 
 ![](./images/ec2_code_server/code_server.png)
 
+## 複数の環境を構築するには
+
+AWS CloudShell で以下のコマンドを実行することで、複数の環境を作成できます。
+
+```console
+curl -sSfLO https://raw.githubusercontent.com/GenerativeAgents/training-llm-application-development-starter/refs/heads/main/docs/ec2_code_server.yaml
+
+for i in {01..05}; do
+  aws cloudformation create-stack \
+    --stack-name "code-server-${i}" \
+    --template-body "file://$(pwd)/ec2_code_server.yaml" \
+    --capabilities CAPABILITY_IAM \
+    --parameters "ParameterKey=AvailabilityZone,ParameterValue=ap-northeast-1a"
+done
+```
+
+> [!WARNING]
+> 同一の AWS アカウントでは、デフォルトで最大5つの環境を起動することができます。
+>
+> それ以上多くの環境を起動するためには、以下のクォータの引き上げが必要な可能性がありますが、とくに Elastic IP アドレスについては簡単にクォータの引き上げができないためご注ください。
+>
+> - リージョンあたりの VPC の数
+> - リージョンあたりの Elastic IP アドレスの数
+>
+> 参考: https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/amazon-vpc-limits.html
+
+以下のコマンドで、接続情報の一覧を取得できます。
+
+```console
+stack_names="$(aws cloudformation list-stacks \
+  --query 'StackSummaries[?starts_with(StackName, `code-server-`) && StackStatus != `DELETE_COMPLETE`].StackName' \
+  --output text \
+  | tr '\t' '\n' \
+  | sort
+)"
+
+for stack_name in $stack_names; do
+  echo "Name:"
+  echo "${stack_name}"
+
+  echo "URL:"
+  aws cloudformation describe-stacks \
+    --stack-name $stack_name \
+    --query 'Stacks[].Outputs[?OutputKey==`URL`].OutputValue' \
+    | jq -r .[][]
+
+  echo "Password:"
+  aws secretsmanager get-secret-value \
+    --secret-id "${stack_name}-Password" \
+    --region ap-northeast-1 \
+    --query 'SecretString' \
+    --output text
+
+  echo
+done
+```
+
 ## トラブルシューティング
 
 ### EC2 インスタンスへの接続
@@ -167,6 +155,23 @@ Systems Manager のホーム画面左のメニューから「セッションマ�
 ![](./images/ec2_code_server/session_manager_start.png)
 
 ![](./images/ec2_code_server/session_manager_connected.png)
+
+### CloudShell からの EC2 インスタンスへの接続手順
+
+CloudShell で以下のコマンドを実行することでも、EC2 インスタンスに接続できます。
+
+```
+stack_name="code-server-01"
+stack_name="work"
+
+instance_id="$(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=${stack_name}" \
+  --query "Reservations[].Instances[].InstanceId" \
+  --output text \
+)"
+
+aws ssm start-session --target "${instance_id}"
+```
 
 ### 起動時のスクリプトのログ確認手順
 
