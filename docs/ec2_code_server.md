@@ -162,7 +162,6 @@ CloudShell で以下のコマンドを実行することでも、EC2 インス�
 
 ```
 stack_name="code-server-01"
-stack_name="work"
 
 instance_id="$(aws ec2 describe-instances \
   --filters "Name=tag:Name,Values=${stack_name}" \
@@ -170,7 +169,13 @@ instance_id="$(aws ec2 describe-instances \
   --output text \
 )"
 
+# インタラクティブ操作する場合
 aws ssm start-session --target "${instance_id}"
+
+# 1つだけコマンドを実行する場合 (git pull する例)
+aws ssm start-session --target "${instance_id}" \
+  --document-name AWS-StartInteractiveCommand \
+  --parameters command="sudo -u ubuntu git -C /home/ubuntu/environment/training-llm-application-development-starter pull"
 ```
 
 ### 起動時のスクリプトのログ確認手順
