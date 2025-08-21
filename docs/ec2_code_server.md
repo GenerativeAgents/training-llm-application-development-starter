@@ -160,6 +160,8 @@ Systems Manager のホーム画面左のメニューから「セッションマ�
 
 CloudShell で以下のコマンドを実行することでも、EC2 インスタンスに接続できます。
 
+**インタラクティブ操作する場合**
+
 ```
 stack_name="code-server-01"
 
@@ -171,6 +173,18 @@ instance_id="$(aws ec2 describe-instances \
 
 # インタラクティブ操作する場合
 aws ssm start-session --target "${instance_id}"
+```
+
+**1つだけコマンドを実行する場合 (git pull する例)**
+
+```
+stack_name="code-server-01"
+
+instance_id="$(aws ec2 describe-instances \
+  --filters "Name=tag:Name,Values=${stack_name}" \
+  --query "Reservations[].Instances[].InstanceId" \
+  --output text \
+)"
 
 # 1つだけコマンドを実行する場合 (git pull する例)
 aws ssm start-session --target "${instance_id}" \
