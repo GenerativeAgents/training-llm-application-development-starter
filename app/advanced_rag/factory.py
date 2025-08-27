@@ -1,8 +1,8 @@
-from typing import Any, Callable
+from typing import Callable
 
 from langchain_core.language_models import BaseChatModel
-from langchain_core.runnables import Runnable
 
+from app.advanced_rag.chains.base import BaseRAGChain
 from app.advanced_rag.chains.naive import create_naive_rag_chain
 
 # from app.advanced_rag.chains.hyde import create_hyde_rag_chain
@@ -12,7 +12,7 @@ from app.advanced_rag.chains.naive import create_naive_rag_chain
 # from app.advanced_rag.chains.route import create_route_rag_chain
 # from app.advanced_rag.chains.hybrid import create_hybrid_rag_chain
 
-ChainConstructorType = Callable[[BaseChatModel], Runnable[str, dict[str, Any]]]
+ChainConstructorType = Callable[[BaseChatModel], BaseRAGChain]
 
 chain_constructor_by_name: dict[str, ChainConstructorType] = {
     "naive": create_naive_rag_chain,
@@ -25,14 +25,9 @@ chain_constructor_by_name: dict[str, ChainConstructorType] = {
 }
 
 
-def create_rag_chain(
-    chain_name: str,
-    model: BaseChatModel,
-) -> Runnable[str, dict[str, Any]]:
+def create_rag_chain(chain_name: str, model: BaseChatModel) -> BaseRAGChain:
     if chain_name not in chain_constructor_by_name:
         raise ValueError(f"Unknown chain name: {chain_name}")
 
     chain_constructor = chain_constructor_by_name[chain_name]
-    chain = chain_constructor(model)
-
-    return chain.with_config({"run_name": chain_name})
+    return chain_constructor(model)
