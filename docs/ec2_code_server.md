@@ -100,7 +100,8 @@ done
 >
 > それ以上多くの環境を起動するためには、以下のクォータの引き上げが必要な可能性があります。
 >
-> - リージョンあたりの VPC の数
+> - VPCs per Region
+> - Running On-Demand Standard (A, C, D, H, I, M, R, T, Z) instances
 >
 > 参考: https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/amazon-vpc-limits.html
 
