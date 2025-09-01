@@ -116,22 +116,21 @@ stack_names="$(aws cloudformation list-stacks \
 )"
 
 for stack_name in $stack_names; do
-  echo "Name:"
-  echo "${stack_name}"
-
-  echo "URL:"
-  aws cloudformation describe-stacks \
+  url="$(aws cloudformation describe-stacks \
     --stack-name $stack_name \
     --query 'Stacks[].Outputs[?OutputKey==`URL`].OutputValue' \
     | jq -r .[][]
-
-  echo "Password:"
-  aws secretsmanager get-secret-value \
+  )"
+  password="$(aws secretsmanager get-secret-value \
     --secret-id "${stack_name}-Password" \
     --region ap-northeast-1 \
     --query 'SecretString' \
     --output text
+  )"
 
+  echo "Name: ${stack_name}"
+  echo "URL: ${url}"
+  echo "Password: ${password}"
   echo
 done
 ```
