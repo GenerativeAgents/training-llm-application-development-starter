@@ -425,7 +425,7 @@ Resources:
         MinTTL: 1
         Name:
           # prettier-ignore
-          !Join ['-', ['code-server', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
+          !Join ['-', [!Ref AWS::StackName, 'cache-policy', !Select [4, !Split ['-', !Select [2, !Split ['/', !Ref AWS::StackId]]]]]]
         ParametersInCacheKeyAndForwardedToOrigin:
           CookiesConfig:
             CookieBehavior: all
