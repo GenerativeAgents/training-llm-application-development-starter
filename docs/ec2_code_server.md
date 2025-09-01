@@ -98,10 +98,9 @@ done
 > [!WARNING]
 > 同一の AWS アカウントでは、デフォルトで最大5つの環境を起動することができます。
 >
-> それ以上多くの環境を起動するためには、以下のクォータの引き上げが必要な可能性がありますが、とくに Elastic IP アドレスについては簡単にクォータの引き上げができないためご注ください。
+> それ以上多くの環境を起動するためには、以下のクォータの引き上げが必要な可能性があります。
 >
 > - リージョンあたりの VPC の数
-> - リージョンあたりの Elastic IP アドレスの数
 >
 > 参考: https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/amazon-vpc-limits.html
 
@@ -228,8 +227,33 @@ EC2 のホーム画面左のメニューから「インスタンス」を開き�
 ![](./images/ec2_code_server/ec2_stop.png)
 
 > [!WARNING]
-> EC2 インスタンスを停止しても、固定 IP アドレス (Elastic IP アドレス) とデータを保存するストレージ (EBS) は確保したままのため、これらの料金は発生し続けます。
+> EC2 インスタンスを停止しても、データを保存するストレージ (EBS) は確保したままのため、ストレージの料金は発生し続けます。
 > 完全に料金が発生しないようにするには、次の手順で「削除」を実施する必要があります。
+
+### EC2 インスタンス再起動時の注意事項
+
+EC2 インスタンスを停止後に再起動すると、パブリック IP アドレスが変更されるため、CloudFront の Origin 設定を更新する必要があります。
+
+以下のスクリプトを使用して CloudFront の Origin を自動的に更新できます：
+
+```bash
+# update_cloudfront_origin.sh をダウンロード
+curl -sSfLO https://raw.githubusercontent.com/GenerativeAgents/training-llm-application-development-starter/refs/heads/main/docs/update_cloudfront_origin.sh
+
+# 実行権限を付与
+chmod +x update_cloudfront_origin.sh
+
+# CloudFront Origin を更新（スタック名を指定）
+./update_cloudfront_origin.sh <スタック名>
+```
+
+例：
+```bash
+./update_cloudfront_origin.sh code-server-01
+```
+
+> [!NOTE]
+> CloudFront の変更が反映されるまで約 5 分かかります。
 
 ### CloudFormation スタックの削除手順
 
