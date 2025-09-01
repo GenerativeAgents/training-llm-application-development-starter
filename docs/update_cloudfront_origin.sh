@@ -61,7 +61,7 @@ ETAG=$(aws cloudfront get-distribution-config --id "$DISTRIBUTION_ID" --query ET
 
 aws cloudfront get-distribution-config --id "$DISTRIBUTION_ID" \
   --query DistributionConfig \
-  | jq ".Origins.Items[0].DomainName = \"$NEW_DNS\" | .Origins.Items[0].Id = \"$NEW_DNS\"" \
+  | jq ".Origins.Items[0].DomainName = \"$NEW_DNS\" | .Origins.Items[0].Id = \"$NEW_DNS\" | .DefaultCacheBehavior.TargetOriginId = \"$NEW_DNS\"" \
   > /tmp/cf-config.json
 
 # CloudFront設定を更新
