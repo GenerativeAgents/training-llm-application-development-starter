@@ -322,6 +322,7 @@ Resources:
       Name: !Sub ${AWS::StackName}-Password
       GenerateSecretString:
         PasswordLength: 16
+        ExcludePunctuation: true
     DeletionPolicy: Delete
     UpdateReplacePolicy: Delete
 
