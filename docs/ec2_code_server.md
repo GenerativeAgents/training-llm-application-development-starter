@@ -100,7 +100,8 @@ done
 >
 > それ以上多くの環境を起動するためには、以下のクォータの引き上げが必要な可能性があります。
 >
-> - リージョンあたりの VPC の数
+> - VPCs per Region
+> - Running On-Demand Standard (A, C, D, H, I, M, R, T, Z) instances
 >
 > 参考: https://docs.aws.amazon.com/ja_jp/vpc/latest/userguide/amazon-vpc-limits.html
 
@@ -115,22 +116,21 @@ stack_names="$(aws cloudformation list-stacks \
 )"
 
 for stack_name in $stack_names; do
-  echo "Name:"
-  echo "${stack_name}"
-
-  echo "URL:"
-  aws cloudformation describe-stacks \
+  url="$(aws cloudformation describe-stacks \
     --stack-name $stack_name \
     --query 'Stacks[].Outputs[?OutputKey==`URL`].OutputValue' \
     | jq -r .[][]
-
-  echo "Password:"
-  aws secretsmanager get-secret-value \
+  )"
+  password="$(aws secretsmanager get-secret-value \
     --secret-id "${stack_name}-Password" \
     --region ap-northeast-1 \
     --query 'SecretString' \
     --output text
+  )"
 
+  echo "Name: ${stack_name}"
+  echo "URL: ${url}"
+  echo "Password: ${password}"
   echo
 done
 ```
