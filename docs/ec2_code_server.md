@@ -255,6 +255,19 @@ chmod +x update_cloudfront_origin.sh
 > [!NOTE]
 > CloudFront の変更が反映されるまで約 5 分かかります。
 
+複数のハンズオン環境に対して同時にスクリプトを実行する際は、以下のコマンドを使用してください。
+
+```bash
+curl -sSfLO https://raw.githubusercontent.com/GenerativeAgents/training-llm-application-development-starter/refs/heads/main/docs/update_cloudfront_origin.sh
+
+chmod +x update_cloudfront_origin.sh
+
+for i in {01..05}; do
+  stack_name="code-server-${i}"
+  ./update_cloudfront_origin.sh "${stack_name}"
+done
+```
+
 ### CloudFormation スタックの削除手順
 
 マネジメントコンソール上部の検索欄で「CloudFormation」を検索して開きます。
