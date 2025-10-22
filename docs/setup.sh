@@ -27,8 +27,13 @@ uv sync
 uv run python --version
 
 # langchainリポジトリのclone
-if [ ! -d "./tmp/langchain-docs" ]; then
-  git clone --depth 1 https://github.com/langchain-ai/docs.git ./tmp/langchain-docs
+langchain_docs_dir="./tmp/langchain-docs"
+langchain_docs_commit_hash="ab4f564eff6991af4101928c60030e2df0a65a45"
+if [ ! -d "${langchain_docs_dir}" ]; then
+  git clone --depth 1 https://github.com/langchain-ai/docs.git "${langchain_docs_dir}"
+
+  git -C "${langchain_docs_dir}" fetch --depth 1 origin "${langchain_docs_commit_hash}"
+  git -C "${langchain_docs_dir}" checkout "${langchain_docs_commit_hash}"
 fi
 
 # Visual Studio Codeの拡張機能のインストール
