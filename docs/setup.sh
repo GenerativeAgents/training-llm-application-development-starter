@@ -27,8 +27,8 @@ uv sync
 uv run python --version
 
 # langchainリポジトリのclone
-if [ ! -d "./tmp/langchain" ]; then
-  git clone --depth 1 https://github.com/langchain-ai/langchain.git ./tmp/langchain
+if [ ! -d "./tmp/langchain-docs" ]; then
+  git clone --depth 1 https://github.com/langchain-ai/docs.git ./tmp/langchain-docs
 fi
 
 # Visual Studio Codeの拡張機能のインストール
