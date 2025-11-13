@@ -5,6 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
+        extra="ignore",
         env_file=".env",
         env_file_encoding="utf-8",
     )
@@ -18,7 +19,7 @@ class Settings(BaseSettings):
     LANGCHAIN_PROJECT: str = "agent-book"
 
     # for Application
-    openai_smart_model: str = "gpt-4o"
+    openai_smart_model: str = "gpt-4.1"
     openai_embedding_model: str = "text-embedding-3-small"
     anthropic_smart_model: str = "claude-3-5-sonnet-20240620"
     temperature: float = 0.0
