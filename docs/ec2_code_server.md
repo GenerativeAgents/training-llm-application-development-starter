@@ -133,6 +133,31 @@ for stack_name in $stack_names; do
   echo "Password: ${password}"
   echo
 done
+
+# または以下を実行
+
+for stack_name in $stack_names; do
+  echo "${stack_name}"
+done
+
+for stack_name in $stack_names; do
+  url="$(aws cloudformation describe-stacks \
+    --stack-name $stack_name \
+    --query 'Stacks[].Outputs[?OutputKey==`URL`].OutputValue' \
+    | jq -r .[][]
+  )"
+  echo "${url}"
+done
+
+for stack_name in $stack_names; do
+  password="$(aws secretsmanager get-secret-value \
+    --secret-id "${stack_name}-Password" \
+    --region ap-northeast-1 \
+    --query 'SecretString' \
+    --output text
+  )"
+  echo "${password}"
+done
 ```
 
 ## トラブルシューティング
