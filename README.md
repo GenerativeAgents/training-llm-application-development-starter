@@ -1,5 +1,9 @@
 # training-llm-application-development-starter
 
+> [!WARNING]
+> **このリポジトリはアーカイブされました。**
+> このリポジトリの内容は [training-llm-application-development](https://github.com/GenerativeAgents/training-llm-application-development) リポジトリに統合されました。今後はそちらをご利用ください。
+
 LLM アプリケーション開発者養成講座のハンズオン環境構築のためのリポジトリです。
 
 ## ハンズオン環境への接続
